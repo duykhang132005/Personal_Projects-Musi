@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
-  emptyLibrary, addItem, setBucketOrder, rankedList, bucketOf, removeItem, unrankItem,
+  emptyLibrary, addItem, setBucketOrder, rankedList, bucketOf, removeItem,
   addToQueue, removeFromQueue, unrankedItems, exportLibrary, importLibrary, loadLibrary, saveLibrary,
 } from './library.js';
 
@@ -33,13 +33,12 @@ describe('library model', () => {
     expect(lib.lists.song.fine).toEqual(['itunes:song:1']);
   });
 
-  it('unranks and removes', () => {
+  it('removes an item from buckets and the library', () => {
     let lib = addItem(emptyLibrary(), song(1));
     lib = setBucketOrder(lib, 'song', 'liked', ['itunes:song:1']);
-    lib = unrankItem(lib, 'itunes:song:1');
-    expect(bucketOf(lib, 'itunes:song:1')).toBeNull();
-    expect(lib.items['itunes:song:1']).toBeTruthy();
     lib = removeItem(lib, 'itunes:song:1');
+    expect(bucketOf(lib, 'itunes:song:1')).toBeNull();
+    expect(lib.lists.song.liked).toEqual([]);
     expect(lib.items['itunes:song:1']).toBeUndefined();
   });
 

@@ -34,13 +34,6 @@ function withoutInBuckets(lib, kind, id) {
   return { ...lib.lists, [kind]: next };
 }
 
-/** Remove from ranked buckets but keep in the library (used for re-rank). */
-export function unrankItem(lib, id) {
-  const item = lib.items[id];
-  if (!item) return lib;
-  return { ...lib, lists: withoutInBuckets(lib, item.kind, id) };
-}
-
 /** Replace a bucket's ordered list (result of a finished comparison). */
 export function setBucketOrder(lib, kind, bucket, orderedIds) {
   let lists = lib.lists;

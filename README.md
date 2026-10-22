@@ -11,7 +11,7 @@ place it in your personal ranked list. Scores (0 to 10) come from the rank insid
 
 ## Run it
 
-Requires Node 18 or newer.
+Requires Node 20.19 or newer (or 22.12+), as needed by Vite 8.
 
 ```
 cd Personal_Projects\musi

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getProvider } from '../data/providers/index.js';
-import { bucketOf, albumStats } from '../lib/library.js';
+import { bucketOf, albumStats, songScores } from '../lib/library.js';
 import { BUCKET_META, bucketForScore } from '../lib/ranking.js';
 import ItemCard from './ItemCard.jsx';
 import KindToggle from './KindToggle.jsx';
@@ -10,6 +10,8 @@ export default function SearchView({ lib, kind, kindDir = 'fwd', setKind, onRate
   const [results, setResults] = useState([]);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState('');
+  // Score every ranked song once per library change instead of once per album result.
+  const scores = useMemo(() => songScores(lib), [lib]);
 
   useEffect(() => {
     const q = term.trim();
@@ -63,7 +65,7 @@ export default function SearchView({ lib, kind, kindDir = 'fwd', setKind, onRate
           const bucket = known ? bucketOf(lib, item.id) : null;
           const queued = lib.queue.includes(item.id);
           const isAlbum = item.kind === 'album';
-          const stats = isAlbum && known ? albumStats(lib, item.id) : null;
+          const stats = isAlbum && known ? albumStats(lib, item.id, scores) : null;
           return (
             <li key={item.id} className="enter">
               <ItemCard item={item} preview={preview} onOpen={isAlbum ? onOpen : undefined}>
