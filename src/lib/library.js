@@ -144,10 +144,13 @@ export function albumFromSong(song) {
   };
 }
 
-/** All ranked items of a kind with derived scores, best first. Albums need at least one rated song. */
-export function rankedList(lib, kind) {
+/**
+ * All ranked items of a kind with derived scores, best first. Albums need at least one rated song.
+ * Pass precomputed songScores(lib) as scores to avoid recomputing them.
+ */
+export function rankedList(lib, kind, scores) {
   if (kind === 'album') {
-    const scores = songScores(lib);
+    scores = scores || songScores(lib);
     const out = [];
     for (const item of Object.values(lib.items)) {
       if (item.kind !== 'album') continue;
@@ -172,9 +175,8 @@ export function rankedList(lib, kind) {
   return out;
 }
 
-/** Library items not yet ranked and not in the queue. */
-export function unrankedItems(lib, kind) {
-  const scores = songScores(lib);
+/** Library items not yet ranked and not in the queue. Optional scores = songScores(lib). */
+export function unrankedItems(lib, kind, scores = songScores(lib)) {
   const isRanked = (it) => (it.kind === 'album' ? albumStats(lib, it.id, scores).average !== null : !!bucketOf(lib, it.id));
   return Object.values(lib.items)
     .filter((it) => it.kind === kind && !isRanked(it) && !lib.queue.includes(it.id))

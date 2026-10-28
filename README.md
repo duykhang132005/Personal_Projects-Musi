@@ -40,6 +40,14 @@ makes it work from any subfolder, so just upload the contents of `dist\`.
 
 Re-rank an item from its menu in the ranked list; canceling keeps its old spot.
 
+### Keyboard
+
+- Album titles act as buttons: focus one with Tab and press Enter or Space to open the album.
+- Escape closes only the topmost layer: an open menu first, then the rating window, then the
+  album page (src/lib/escapeStack.js).
+- Opening the rating window or album page moves focus into it; closing it returns focus to
+  where you were.
+
 ### Albums
 
 Albums are not compared directly. Tap an album (or "Rate songs") to open its tracklist
@@ -57,15 +65,23 @@ albums stay in your library (as unrated) and their scores are derived from songs
 src/
   App.jsx                     tabs, rating flow wiring
   styles.css                  mobile-first dark theme
-  components/                 SearchView, RankedView, QueueView, DataView, RateFlow, ItemCard
+  components/
+    SearchView, RankedView, QueueView, DataView   the four tabs
+    RateFlow                  bucket pick + comparison dialog
+    AlbumView                 album detail dialog: tracklist, per-song scores, album average
+    ItemCard                  song/album row (artwork, preview button, titles)
+    MarqueeText               single-line text that scrolls when it overflows
+    Menu                      portal popover menu for ranked rows
+    KindToggle                Songs/Albums switch with sliding pill
   lib/ranking.js              comparison engine + score math (pure, tested)
-  lib/library.js              library model, localStorage, export/import (pure, tested)
+  lib/library.js              library model, album averages, localStorage, export/import (pure, tested)
+  lib/escapeStack.js          Escape closes the topmost layer; dialog focus in and restore (tested)
   lib/useLibrary.js           React hook that persists the library
   lib/usePreview.js           single shared audio player for 30s previews
   data/cache.js               TTL cache for API responses (localStorage)
   data/providers/
     MusicProvider.js          provider interface + normalized item shape
-    itunes.js                 iTunes Search provider (search, getById)
+    itunes.js                 iTunes Search provider (search, getById, getAlbumTracks)
     musickit.js               Apple MusicKit stub (not implemented)
     index.js                  provider registry
 ```

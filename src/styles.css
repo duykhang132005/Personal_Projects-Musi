@@ -103,6 +103,7 @@ a { color: var(--accent); }
 .modal { position: fixed; inset: 0; z-index: 20; padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left); background: rgba(0, 0, 0, 0.6); display: flex; align-items: flex-end; justify-content: center; }
 .sheet { position: relative; width: 100%; max-width: 640px; max-height: 100vh; max-height: calc(100dvh - env(safe-area-inset-top)); overflow-y: auto; overscroll-behavior: contain; background: var(--bg); border-radius: 20px 20px 0 0; padding: 20px 16px calc(24px + env(safe-area-inset-bottom)); animation: up 0.18s ease-out; }
 .sheet h2 { margin: 0 0 12px; text-align: center; }
+.sheet:focus { outline: none; }
 .sheet__close { position: absolute; top: 10px; right: 12px; border: 0; background: none; font-size: 1.6rem; color: var(--muted); cursor: pointer; }
 @keyframes up { from { transform: translateY(30px); opacity: 0; } }
 

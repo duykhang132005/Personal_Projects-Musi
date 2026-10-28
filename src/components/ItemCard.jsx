@@ -23,12 +23,26 @@ export default function ItemCard({ item, preview, children, compact, onOpen }) {
       <div
         className={`item__meta ${onOpen ? 'item__meta--link' : ''}`}
         onClick={onOpen ? () => onOpen(item) : undefined}
-        onKeyDown={onOpen ? (e) => e.key === 'Enter' && onOpen(item) : undefined}
+        role={onOpen ? 'button' : undefined}
+        tabIndex={onOpen ? 0 : undefined}
+        aria-label={onOpen ? `Open album ${item.title}` : undefined}
+        onKeyDown={
+          onOpen
+            ? (e) => {
+                if (e.target !== e.currentTarget) return;
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onOpen(item);
+                }
+              }
+            : undefined
+        }
       >
-        <MarqueeText className="item__title" text={item.title} focusable={!compact} />
+        {/* Titles are not separately focusable inside a clickable (role=button) area. */}
+        <MarqueeText className="item__title" text={item.title} focusable={!compact && !onOpen} />
         <MarqueeText
           className="item__sub"
-          focusable={!compact}
+          focusable={!compact && !onOpen}
           text={[item.artist, item.kind === 'song' ? item.album : '', item.releaseDate ? item.releaseDate.slice(0, 4) : '']
             .filter(Boolean)
             .join(' · ')}

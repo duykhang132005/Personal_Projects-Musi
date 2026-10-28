@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useEscape } from '../lib/escapeStack.js';
 
 const GAP = 4;
 const MARGIN = 8;
@@ -61,28 +62,25 @@ export default function Menu({ children, label = 'More' }) {
       if (btnRef.current?.contains(e.target) || popRef.current?.contains(e.target)) return;
       close();
     };
-    const onKey = (e) => {
-      if (e.key === 'Escape') {
-        close();
-        btnRef.current?.focus();
-      }
-    };
     const onScroll = (e) => {
       if (popRef.current?.contains(e.target)) return;
       close();
     };
     const onResize = () => place();
     document.addEventListener('pointerdown', onDoc);
-    document.addEventListener('keydown', onKey);
     window.addEventListener('scroll', onScroll, true);
     window.addEventListener('resize', onResize);
     return () => {
       document.removeEventListener('pointerdown', onDoc);
-      document.removeEventListener('keydown', onKey);
       window.removeEventListener('scroll', onScroll, true);
       window.removeEventListener('resize', onResize);
     };
   });
+  // Escape goes through the shared stack so it closes only the topmost layer.
+  useEscape(() => {
+    close();
+    btnRef.current?.focus();
+  }, phase === 'open');
   useEffect(() => () => clearTimeout(timer.current), []);
 
   return (

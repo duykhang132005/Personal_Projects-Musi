@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useEscape, useDialogFocus } from '../lib/escapeStack.js';
 import { BUCKETS, BUCKET_META, startComparison, currentOpponent, answer, finish, maxComparisons } from '../lib/ranking.js';
 import ItemCard from './ItemCard.jsx';
 
@@ -24,14 +25,17 @@ export default function RateFlow({ item, lib, onDone, onCancel, preview }) {
   }
 
   const opponent = state ? lib.items[currentOpponent(state)] : null;
+  const sheetRef = useRef(null);
+  useEscape(onCancel);
+  useDialogFocus(sheetRef);
 
   return (
-    <div className="modal" role="dialog" aria-modal="true" onClick={(e) => e.target === e.currentTarget && onCancel()}>
-      <div className="sheet">
+    <div className="modal" role="dialog" aria-modal="true" aria-labelledby="rateflow-title" onClick={(e) => e.target === e.currentTarget && onCancel()}>
+      <div className="sheet" ref={sheetRef} tabIndex={-1}>
         <button className="sheet__close" onClick={onCancel} aria-label="Close">×</button>
         {!state && (
           <div key="bucket" className="step-in">
-            <h2>How was it?</h2>
+            <h2 id="rateflow-title">How was it?</h2>
             <ItemCard item={item} preview={preview} />
             <div className="buckets">
               {BUCKETS.map((b) => (
@@ -46,7 +50,7 @@ export default function RateFlow({ item, lib, onDone, onCancel, preview }) {
         )}
         {state && opponent && (
           <div key={`q${state.steps}`} className="step-in">
-            <h2>Which is better?</h2>
+            <h2 id="rateflow-title">Which is better?</h2>
             <p className="muted tiny">
               Question {state.steps + 1} of at most {state.steps + maxComparisons(state.hi - state.lo)}
             </p>

@@ -1,11 +1,13 @@
-import { rankedList, unrankedItems } from '../lib/library.js';
+import { useMemo } from 'react';
+import { rankedList, unrankedItems, songScores } from '../lib/library.js';
 import Menu from './Menu.jsx';
 import ItemCard from './ItemCard.jsx';
 import KindToggle from './KindToggle.jsx';
 
 export default function RankedView({ lib, kind, kindDir = 'fwd', leaving = new Set(), setKind, onRate, onOpen, onRerank, onRemove, preview, goSearch }) {
-  const ranked = rankedList(lib, kind);
-  const unranked = unrankedItems(lib, kind);
+  const scores = useMemo(() => songScores(lib), [lib]);
+  const ranked = rankedList(lib, kind, scores);
+  const unranked = unrankedItems(lib, kind, scores);
   const noun = kind === 'song' ? 'songs' : 'albums';
 
   return (

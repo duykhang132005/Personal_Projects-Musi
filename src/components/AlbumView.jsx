@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEscape, useDialogFocus } from '../lib/escapeStack.js';
 import { getProvider } from '../data/providers/index.js';
 import { songScores } from '../lib/library.js';
 import { bucketForScore } from '../lib/ranking.js';
@@ -26,16 +27,19 @@ export default function AlbumView({ album, lib, onClose, onRate, onTracks, previ
   }, [album.id]);
 
   const a = data.album;
-  const scores = songScores(lib);
+  const scores = useMemo(() => songScores(lib), [lib]);
   const rated = data.tracks.filter((t) => typeof scores[t.id] === 'number');
   const total = data.tracks.length;
   const avg = rated.length ? Math.round((rated.reduce((s, t) => s + scores[t.id], 0) / rated.length) * 10) / 10 : null;
   const multiDisc = data.tracks.some((t) => t.discNumber > 1);
   const trackIds = data.tracks.map((t) => t.id);
+  const sheetRef = useRef(null);
+  useEscape(onClose);
+  useDialogFocus(sheetRef);
 
   return (
     <div className="modal" role="dialog" aria-modal="true" aria-label={a.title} onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="sheet sheet--album step-in">
+      <div className="sheet sheet--album step-in" ref={sheetRef} tabIndex={-1}>
         <button className="sheet__close" onClick={onClose} aria-label="Close">×</button>
         <header className="album__head">
           <div className="album__art">{a.artworkUrl ? <img src={a.artworkUrl} alt="" /> : null}</div>

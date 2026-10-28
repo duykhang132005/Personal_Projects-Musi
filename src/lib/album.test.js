@@ -68,6 +68,16 @@ describe('album averages', () => {
     expect(albumFromSong({ ...song(1), albumId: '' })).toBeNull();
   });
 
+  it('rankedList and unrankedItems use precomputed scores when given', () => {
+    const lib = libWith([1]);
+    // Fake scores prove the passed map is used instead of recomputing from buckets.
+    const fake = { 'itunes:song:1': 2, 'itunes:song:2': 4 };
+    expect(rankedList(lib, 'album', fake)[0].score).toBe(3);
+    expect(rankedList(lib, 'album')[0].score).toBe(10);
+    expect(unrankedItems(lib, 'album', {}).map((a) => a.id)).toEqual([AL]);
+    expect(unrankedItems(lib, 'album')).toEqual([]);
+  });
+
   it('bucketForScore matches the bucket ranges', () => {
     expect(bucketForScore(10)).toBe('liked');
     expect(bucketForScore(6.7)).toBe('liked');
