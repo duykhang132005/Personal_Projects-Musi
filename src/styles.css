@@ -36,6 +36,7 @@ a { color: var(--accent); }
 
 .h { margin: 8px 0 12px; font-size: 1.25rem; }
 .sub { margin: 16px 0 8px; font-size: 0.9rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+.sub--divider { margin-top: 20px; padding-top: 14px; border-top: 1px solid var(--card-2); }
 .muted { color: var(--muted); }
 .tiny { font-size: 0.8rem; }
 .center { text-align: center; justify-content: center; }

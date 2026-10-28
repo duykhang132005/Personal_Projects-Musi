@@ -111,12 +111,15 @@ export function setAlbumTracks(lib, album, tracks) {
     // Fill in metadata the stored album may lack (e.g. stubs created from a song).
     items[album.id] = {
       ...existing,
+      // Stubs built from a song carry the song's artist; prefer the real album metadata.
+      ...(existing.stub ? { title: album.title || existing.title, artist: album.artist || existing.artist } : {}),
       artworkUrl: existing.artworkUrl || album.artworkUrl || '',
       externalUrl: existing.externalUrl || album.externalUrl || '',
       releaseDate: existing.releaseDate || album.releaseDate || '',
       trackIds,
       trackCount: trackIds.length,
     };
+    delete items[album.id].stub;
   }
   for (const t of tracks) if (items[t.id] && !items[t.id].albumId) items[t.id] = { ...items[t.id], albumId: album.id };
   return { ...lib, items };
@@ -140,8 +143,13 @@ export function albumFromSong(song) {
   return {
     id: song.albumId, provider: song.provider, kind: 'album', title: song.album, artist: song.albumArtist || song.artist,
     album: song.album, artworkUrl: song.artworkUrl, previewUrl: '', externalUrl: '', releaseDate: song.releaseDate,
-    albumId: song.albumId,
+    albumId: song.albumId, stub: true,
   };
+}
+
+/** Albums in the library whose tracklist has not been fetched yet. */
+export function albumsNeedingTracks(lib) {
+  return Object.values(lib.items).filter((it) => it.kind === 'album' && !Array.isArray(it.trackIds));
 }
 
 /**

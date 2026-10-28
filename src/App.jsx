@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useLibrary } from './lib/useLibrary.js';
+import { useAlbumPrefetch } from './lib/albumPrefetch.js';
 import { usePreview } from './lib/usePreview.js';
 import { addItem, addToQueue, removeItem, removeFromQueue, setBucketOrder, ensureAlbum, albumFromSong, setAlbumTracks } from './lib/library.js';
 import SearchView from './components/SearchView.jsx';
@@ -28,6 +29,8 @@ export default function App() {
   const [rating, setRating] = useState(null); // { item, album, trackIds } being rated
   const [openAlbum, setOpenAlbum] = useState(null); // album item shown in the detail sheet
   const preview = usePreview();
+  // Load tracklists for auto-added albums right away, not only when the album is opened.
+  useAlbumPrefetch(lib, update);
 
   const setKind = (k) => {
     if (k === kind) return;

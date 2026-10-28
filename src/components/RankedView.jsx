@@ -23,7 +23,9 @@ export default function RankedView({ lib, kind, kindDir = 'fwd', leaving = new S
           <h3 className="sub">Not rated yet</h3>
           <ul className="list">
             {unranked.map((item) => (
-              <li key={item.id} className={leaving.has(item.id) ? 'leave' : 'enter'}>
+              <li key={item.id} className={`ranked__row ${leaving.has(item.id) ? 'leave' : 'enter'}`}>
+                {/* Empty rank column keeps unrated cards the same width as ranked ones. */}
+                <span className="ranked__rank" aria-hidden="true" />
                 <ItemCard item={item} preview={preview} onOpen={kind === 'album' ? onOpen : undefined}>
                   <button className="btn btn--primary" onClick={() => onRate(item)}>{kind === 'album' ? 'Rate songs' : 'Rate'}</button>
                   <button className="btn btn--ghost" onClick={() => onRemove(item.id)} aria-label="Remove">✕</button>
@@ -34,6 +36,7 @@ export default function RankedView({ lib, kind, kindDir = 'fwd', leaving = new S
         </>
       )}
 
+      {unranked.length > 0 && ranked.length > 0 && <h3 className="sub sub--divider">Ranked</h3>}
       {ranked.length === 0 ? (
         <div className="empty">
           <p>No rated {noun} yet.</p>
