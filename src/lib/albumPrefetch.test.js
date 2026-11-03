@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { createAlbumPrefetcher } from './albumPrefetch.js';
+import { createAlbumPrefetcher, onReconnect } from './albumPrefetch.js';
 import { emptyLibrary, addItem, setBucketOrder, ensureAlbum, albumFromSong, albumsNeedingTracks, albumStats, setAlbumTracks } from './library.js';
 
 const AL = 'itunes:album:1';
@@ -48,5 +48,46 @@ describe('album prefetch', () => {
     const pf = createAlbumPrefetcher({ getAlbumTracks }, { concurrency: 2 });
     await Promise.all(['a', 'b', 'c', 'd', 'e'].map((id) => pf.fetch(id)));
     expect(peak).toBe(2);
+  });
+
+  it('the album page load reuses an in-flight background fetch', async () => {
+    let release;
+    const getAlbumTracks = vi.fn(() => new Promise((r) => (release = r)));
+    const pf = createAlbumPrefetcher({ getAlbumTracks });
+    const bg = pf.fetch(AL);
+    const page = pf.load(AL, { urgent: true });
+    release({ album: fullAlbum, tracks: [] });
+    expect(await page).toBe(await bg);
+    expect(getAlbumTracks).toHaveBeenCalledTimes(1);
+  });
+
+  it('the album page load rejects on failure and retries a known failed album', async () => {
+    const getAlbumTracks = vi.fn().mockRejectedValueOnce(new Error('offline')).mockResolvedValue({ album: fullAlbum, tracks: [] });
+    const pf = createAlbumPrefetcher({ getAlbumTracks });
+    await expect(pf.load(AL)).rejects.toThrow('offline');
+    expect(await pf.fetch(AL)).toBeNull(); // background skips it
+    expect(await pf.load(AL)).toMatchObject({ album: fullAlbum }); // explicit open retries
+    expect(getAlbumTracks).toHaveBeenCalledTimes(2);
+  });
+
+  it('resetFailed lets background fetches retry', async () => {
+    const getAlbumTracks = vi.fn().mockRejectedValueOnce(new Error('offline')).mockResolvedValue({ album: fullAlbum, tracks: [] });
+    const pf = createAlbumPrefetcher({ getAlbumTracks });
+    expect(await pf.fetch(AL)).toBeNull();
+    expect(await pf.fetch(AL)).toBeNull();
+    pf.resetFailed();
+    expect(await pf.fetch(AL)).toMatchObject({ album: fullAlbum });
+    expect(getAlbumTracks).toHaveBeenCalledTimes(2);
+  });
+
+  it('onReconnect listens for online, cleans up, and is a no-op without a window', () => {
+    const target = new EventTarget();
+    const cb = vi.fn();
+    const off = onReconnect(cb, target);
+    target.dispatchEvent(new Event('online'));
+    off();
+    target.dispatchEvent(new Event('online'));
+    expect(cb).toHaveBeenCalledTimes(1);
+    expect(onReconnect(cb, null)()).toBeUndefined();
   });
 });

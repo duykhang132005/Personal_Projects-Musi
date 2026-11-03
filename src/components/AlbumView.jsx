@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useEscape, useDialogFocus } from '../lib/escapeStack.js';
-import { getProvider } from '../data/providers/index.js';
+import { getAlbumPrefetcher } from '../lib/albumPrefetch.js';
 import { songScores } from '../lib/library.js';
 import { bucketForScore } from '../lib/ranking.js';
 import MarqueeText from './MarqueeText.jsx';
@@ -11,8 +11,9 @@ export default function AlbumView({ album, lib, onClose, onRate, onTracks, previ
 
   useEffect(() => {
     let cancelled = false;
-    getProvider()
-      .getAlbumTracks(album.id)
+    // Shared with the background prefetch, so an in-flight load is reused, not repeated.
+    getAlbumPrefetcher()
+      .load(album.id, { urgent: true })
       .then((r) => {
         if (cancelled) return;
         const full = { ...album, ...(r.album || {}) };

@@ -50,11 +50,16 @@ Re-rank an item from its menu in the ranked list; canceling keeps its old spot.
 
 ### Albums
 
-Albums are not compared directly. Tap an album (or "Rate songs") to open its tracklist
-(iTunes lookup, cached for 7 days), then rate the songs. The album score is the average of
+Albums are not compared directly. Tap an album (or "Rate songs") to open its tracklist,
+then rate the songs. Tracklists load automatically in the background as soon as an album
+is in your library (iTunes lookup, cached for 7 days), so track counts and artwork are right
+without opening the album; failed loads are retried when the browser comes back online. The album score is the average of
 its rated songs. An album shows up in the ranked albums list once at least one of its
 songs is rated; until every track is rated its score badge is dashed and shows progress
 like `5/12`. Rating any song also adds its album to your library automatically.
+
+On the Ranked tab, items you added but have not rated yet are listed first, then a
+"Ranked" divider, then your ranked list.
 
 Library schema v2: on load or import, v1 data with directly rated albums is migrated. The
 albums stay in your library (as unrated) and their scores are derived from songs from now on.
@@ -76,6 +81,7 @@ src/
   lib/ranking.js              comparison engine + score math (pure, tested)
   lib/library.js              library model, album averages, localStorage, export/import (pure, tested)
   lib/escapeStack.js          Escape closes the topmost layer; dialog focus in and restore (tested)
+  lib/albumPrefetch.js        background album tracklist loading, shared with the album page (tested)
   lib/useLibrary.js           React hook that persists the library
   lib/usePreview.js           single shared audio player for 30s previews
   data/cache.js               TTL cache for API responses (localStorage)
