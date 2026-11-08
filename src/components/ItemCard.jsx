@@ -13,7 +13,7 @@ export default function ItemCard({ item, preview, children, compact, onOpen }) {
         {preview && item.previewUrl && (
           <button
             className="item__play"
-            aria-label={isPlaying ? 'Pause preview' : 'Play 30s preview'}
+            aria-label={isPlaying ? `Pause preview of ${item.title}` : `Play 30s preview of ${item.title}`}
             onClick={() => preview.toggle(item.previewUrl)}
           >
             {isPlaying ? '❚❚' : '▶'}

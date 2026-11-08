@@ -57,7 +57,7 @@ export default function AlbumView({ album, lib, onClose, onRate, onTracks, previ
         </header>
 
         {data.status === 'done' && total > 0 && (
-          <div className="progress" aria-label={`Rated ${rated.length} of ${total} songs`}>
+          <div className="progress" role="progressbar" aria-valuemin={0} aria-valuenow={rated.length} aria-valuemax={total} aria-label={`Rated ${rated.length} of ${total} songs`}>
             <div className="progress__label muted tiny">Rated {rated.length} of {total} songs</div>
             <div className="progress__bar"><span style={{ width: `${(rated.length / total) * 100}%` }} /></div>
           </div>
@@ -74,7 +74,7 @@ export default function AlbumView({ album, lib, onClose, onRate, onTracks, previ
               <li key={t.id} className="track enter">
                 <span className="track__no">{multiDisc ? `${t.discNumber}.` : ''}{t.trackNumber || ''}</span>
                 {t.previewUrl ? (
-                  <button className="track__play" aria-label={playing ? 'Pause preview' : 'Play 30s preview'} onClick={() => preview.toggle(t.previewUrl)}>
+                  <button className="track__play" aria-label={playing ? `Pause preview of ${t.title}` : `Play 30s preview of ${t.title}`} onClick={() => preview.toggle(t.previewUrl)}>
                     {playing ? '❚❚' : '▶'}
                   </button>
                 ) : (
