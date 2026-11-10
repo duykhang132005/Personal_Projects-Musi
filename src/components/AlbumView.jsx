@@ -59,7 +59,7 @@ export default function AlbumView({ album, lib, onClose, onRate, onTracks, previ
         {data.status === 'done' && total > 0 && (
           <div className="progress" role="progressbar" aria-valuemin={0} aria-valuenow={rated.length} aria-valuemax={total} aria-label={`Rated ${rated.length} of ${total} songs`}>
             <div className="progress__label muted tiny">Rated {rated.length} of {total} songs</div>
-            <div className="progress__bar"><span style={{ width: `${(rated.length / total) * 100}%` }} /></div>
+            <div className="progress__bar"><span style={{ transform: `scaleX(${rated.length / total})` }} /></div>
           </div>
         )}
         {data.status === 'loading' && <p className="muted center">Loading tracks...</p>}
@@ -98,7 +98,7 @@ export default function AlbumView({ album, lib, onClose, onRate, onTracks, previ
           })}
         </ol>
         {a.externalUrl && (
-          <p className="center tiny"><a href={a.externalUrl} target="_blank" rel="noreferrer">Open in Apple Music</a></p>
+          <p className="center tiny"><a href={a.externalUrl} target="_blank" rel="noreferrer">Open in Apple Music (opens in new tab)</a></p>
         )}
       </div>
     </div>

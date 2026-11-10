@@ -56,7 +56,7 @@ export default function RankedView({ lib, kind, kindDir = 'fwd', leaving = new S
                 ) : (
                   <span className={`score score--${bucket}`} title={bucket}>{score.toFixed(1)}</span>
                 )}
-                <Menu>
+                <Menu label={`More for ${item.title}`}>
                   {(close) => (
                     <>
                       {kind === 'album' ? (
@@ -65,7 +65,7 @@ export default function RankedView({ lib, kind, kindDir = 'fwd', leaving = new S
                         <button onClick={() => { close(); onRerank(item); }}>Re-rank</button>
                       )}
                       {item.externalUrl && (
-                        <a href={item.externalUrl} target="_blank" rel="noreferrer" onClick={close}>Open in Apple Music</a>
+                        <a href={item.externalUrl} target="_blank" rel="noreferrer" onClick={close}>Open in Apple Music (opens in new tab)</a>
                       )}
                       <button className="danger" onClick={() => { close(); onRemove(item.id); }}>Remove</button>
                     </>

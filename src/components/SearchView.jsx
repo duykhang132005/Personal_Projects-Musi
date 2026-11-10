@@ -48,6 +48,7 @@ export default function SearchView({ lib, kind, kindDir = 'fwd', setKind, onRate
         <input
           type="search"
           placeholder={kind === 'song' ? 'Search songs or artists' : 'Search albums or artists'}
+          aria-label={kind === 'song' ? 'Search songs or artists' : 'Search albums or artists'}
           value={term}
           onChange={(e) => setTerm(e.target.value)}
           autoFocus
