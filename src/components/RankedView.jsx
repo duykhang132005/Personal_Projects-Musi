@@ -28,7 +28,7 @@ export default function RankedView({ lib, kind, kindDir = 'fwd', leaving = new S
                 <span className="ranked__rank" aria-hidden="true" />
                 <ItemCard item={item} preview={preview} onOpen={kind === 'album' ? onOpen : undefined}>
                   <button className="btn btn--primary" onClick={() => onRate(item)}>{kind === 'album' ? 'Rate songs' : 'Rate'}</button>
-                  <button className="btn btn--ghost" onClick={() => onRemove(item.id)} aria-label="Remove">✕</button>
+                  <button className="btn btn--ghost" onClick={() => onRemove(item.id)} aria-label={`Remove ${item.title}`}>✕</button>
                 </ItemCard>
               </li>
             ))}

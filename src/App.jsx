@@ -122,10 +122,16 @@ export default function App() {
         <div className="tabs__inner" style={{ '--tab-i': TABS.findIndex(([id]) => id === tab), '--tab-n': TABS.length }}>
         <span className="tabs__pill" aria-hidden="true" />
         {TABS.map(([id, label, icon]) => (
-          <button key={id} className={tab === id ? 'on' : ''} onClick={() => changeTab(id)}>
+          <button
+            key={id}
+            className={tab === id ? 'on' : ''}
+            onClick={() => changeTab(id)}
+            aria-current={tab === id ? 'page' : undefined}
+            aria-label={id === 'queue' && lib.queue.length > 0 ? `Queue, ${lib.queue.length} saved` : undefined}
+          >
             <span className="tabs__icon" aria-hidden="true">{icon}</span>
             {label}
-            {id === 'queue' && lib.queue.length > 0 && <span className="badge">{lib.queue.length}</span>}
+            {id === 'queue' && lib.queue.length > 0 && <span className="badge" aria-hidden="true">{lib.queue.length}</span>}
           </button>
         ))}
         </div>

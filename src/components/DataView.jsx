@@ -1,13 +1,14 @@
 import { useRef, useState } from 'react';
-import { exportLibrary, importLibrary, emptyLibrary, rankedList } from '../lib/library.js';
+import { exportLibrary, importLibrary, emptyLibrary, rankedList, songScores } from '../lib/library.js';
 import { clearCache } from '../data/cache.js';
 
 export default function DataView({ lib, setLib }) {
   const fileRef = useRef(null);
   const [msg, setMsg] = useState('');
+  const scores = songScores(lib);
   const counts = {
-    songs: rankedList(lib, 'song').length,
-    albums: rankedList(lib, 'album').length,
+    songs: rankedList(lib, 'song', scores).length,
+    albums: rankedList(lib, 'album', scores).length,
     queue: lib.queue.length,
   };
 

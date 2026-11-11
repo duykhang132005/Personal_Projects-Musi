@@ -56,9 +56,11 @@ export default function SearchView({ lib, kind, kindDir = 'fwd', setKind, onRate
         <KindToggle kind={kind} onChange={setKind} />
       </div>
       <div key={kind} className={`slide-${kindDir}`}>
-      {status === 'loading' && <p className="muted">Searching...</p>}
-      {status === 'error' && <p className="error">Search failed: {error}</p>}
-      {status === 'done' && results.length === 0 && <p className="muted">No results.</p>}
+      <p role="status" aria-live="polite" className={status === 'error' ? 'error' : 'muted'}>
+        {status === 'loading' && 'Searching...'}
+        {status === 'error' && `Search failed: ${error}`}
+        {status === 'done' && results.length === 0 && 'No results.'}
+      </p>
       {status === 'idle' && <p className="muted center pad">Find something you listened to and rate it.</p>}
       <ul className="list">
         {results.map((item) => {

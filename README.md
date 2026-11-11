@@ -17,7 +17,7 @@ Requires Node 20.19 or newer (or 22.12+), as needed by Vite 8.
 cd Personal_Projects\musi
 npm install
 npm run dev        # open the printed URL (http://localhost:5173)
-npm test           # unit tests (Vitest)
+npm test           # unit and UI tests (Vitest; jsdom for *.test.jsx)
 npm run build      # production build into dist\
 npm run preview    # serve the built dist\ locally
 ```
@@ -46,7 +46,9 @@ Re-rank an item from its menu in the ranked list; canceling keeps its old spot.
 - Escape closes only the topmost layer: an open menu first, then the rating window, then the
   album page (src/lib/escapeStack.js).
 - Opening the rating window or album page moves focus into it; closing it returns focus to
-  where you were.
+  where you were. While it is open, Tab cycles through the focusable controls inside it and
+  wraps from the last back to the first (Shift+Tab wraps the other way). Disabled and hidden
+  controls are skipped.
 
 ### Albums
 
@@ -69,6 +71,7 @@ albums stay in your library (as unrated) and their scores are derived from songs
 ```
 src/
   App.jsx                     tabs, rating flow wiring
+  App.ui.test.jsx             UI tests: rating flow, dialog focus trap, Escape layers
   styles.css                  mobile-first dark theme
   components/
     SearchView, RankedView, QueueView, DataView   the four tabs
@@ -82,6 +85,7 @@ src/
   lib/library.js              library model, album averages, localStorage, export/import (pure, tested)
   lib/escapeStack.js          Escape closes the topmost layer; dialog focus in and restore (tested)
   lib/albumPrefetch.js        background album tracklist loading, shared with the album page (tested)
+  lib/albumPrefetch.ui.test.jsx  UI tests: prefetch writes tracks and retries on online
   lib/useLibrary.js           React hook that persists the library
   lib/usePreview.js           single shared audio player for 30s previews
   data/cache.js               TTL cache for API responses (localStorage)

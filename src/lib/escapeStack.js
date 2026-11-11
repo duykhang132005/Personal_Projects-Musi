@@ -30,12 +30,55 @@ export function useEscape(handler, active = true) {
   }, [active]);
 }
 
-/** Move focus into a dialog on open and restore it to the previous element on close. */
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+function isShown(el) {
+  if (el.disabled || el.hidden) return false;
+  if (el.getAttribute('aria-disabled') === 'true') return false;
+  if (el.inert || el.closest('[inert]')) return false;
+  if (el.getAttribute('aria-hidden') === 'true' || el.closest('[aria-hidden="true"]')) return false;
+  const style = typeof window !== 'undefined' ? window.getComputedStyle(el) : null;
+  if (style && (style.display === 'none' || style.visibility === 'hidden' || style.visibility === 'collapse')) return false;
+  return true;
+}
+
+function focusablesIn(root) {
+  return [...root.querySelectorAll(FOCUSABLE)].filter(isShown);
+}
+
+/** Move focus into a dialog on open, trap Tab inside it, and restore focus on close. */
 export function useDialogFocus(ref) {
   useEffect(() => {
+    const root = ref.current;
     const prev = typeof document !== 'undefined' ? document.activeElement : null;
-    ref.current?.focus({ preventScroll: true });
+    root?.focus({ preventScroll: true });
+
+    function onKey(e) {
+      if (e.key !== 'Tab' || !root) return;
+      const list = focusablesIn(root);
+      if (list.length === 0) {
+        e.preventDefault();
+        root.focus({ preventScroll: true });
+        return;
+      }
+      const first = list[0];
+      const last = list[list.length - 1];
+      const active = document.activeElement;
+      const outside = active === root || !root.contains(active);
+      if (e.shiftKey) {
+        if (active === first || outside) {
+          e.preventDefault();
+          last.focus({ preventScroll: true });
+        }
+      } else if (active === last || outside) {
+        e.preventDefault();
+        first.focus({ preventScroll: true });
+      }
+    }
+
+    root?.addEventListener('keydown', onKey);
     return () => {
+      root?.removeEventListener('keydown', onKey);
       if (prev && typeof prev.focus === 'function' && document.contains(prev)) prev.focus({ preventScroll: true });
     };
   }, [ref]);

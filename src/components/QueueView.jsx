@@ -17,7 +17,7 @@ export default function QueueView({ lib, leaving = new Set(), onRate, onOpen, on
               <ItemCard item={item} preview={preview} onOpen={item.kind === 'album' ? onOpen : undefined}>
                 <span className="chip">{item.kind === 'song' ? 'Song' : 'Album'}</span>
                 <button className="btn btn--primary" onClick={() => onRate(item)}>{item.kind === 'album' ? 'Open' : 'Rate'}</button>
-                <button className="btn btn--ghost" onClick={() => onRemove(item.id)} aria-label="Remove from queue">✕</button>
+                <button className="btn btn--ghost" onClick={() => onRemove(item.id)} aria-label={`Remove ${item.title} from queue`}>✕</button>
               </ItemCard>
             </li>
           ))}
