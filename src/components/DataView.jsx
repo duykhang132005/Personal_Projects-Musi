@@ -5,6 +5,11 @@ import { clearCache } from '../data/cache.js';
 export default function DataView({ lib, setLib }) {
   const fileRef = useRef(null);
   const [msg, setMsg] = useState('');
+  const [msgKind, setMsgKind] = useState('ok');
+  const notice = (text, kind = 'ok') => {
+    setMsg(text);
+    setMsgKind(kind);
+  };
   const scores = songScores(lib);
   const counts = {
     songs: rankedList(lib, 'song', scores).length,
@@ -19,7 +24,7 @@ export default function DataView({ lib, setLib }) {
     a.download = `musi-library-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
-    setMsg('Exported.');
+    notice('Exported.');
   }
 
   async function doImport(e) {
@@ -30,16 +35,16 @@ export default function DataView({ lib, setLib }) {
       const next = importLibrary(await file.text());
       if (!confirm('Replace your current library with this file?')) return;
       setLib(next);
-      setMsg('Imported.');
+      notice('Imported.');
     } catch (err) {
-      setMsg(`Import failed: ${err.message}`);
+      notice(`Import failed: ${err.message}`, 'error');
     }
   }
 
   function doReset() {
     if (confirm('Delete your whole library? Export first if you want a backup.')) {
       setLib(emptyLibrary());
-      setMsg('Library cleared.');
+      notice('Library cleared.');
     }
   }
 
@@ -54,10 +59,10 @@ export default function DataView({ lib, setLib }) {
         <button className="btn btn--primary" onClick={doExport}>Export JSON</button>
         <button className="btn" onClick={() => fileRef.current?.click()}>Import JSON</button>
         <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={doImport} />
-        <button className="btn" onClick={() => { clearCache(); setMsg('Search cache cleared.'); }}>Clear search cache</button>
+        <button className="btn" onClick={() => { clearCache(); notice('Search cache cleared.'); }}>Clear search cache</button>
         <button className="btn btn--danger" onClick={doReset}>Delete library</button>
       </div>
-      {msg && <p className="muted">{msg}</p>}
+      <p role="status" aria-live="polite" className={msgKind === 'error' ? 'error' : 'muted'}>{msg}</p>
       <p className="muted tiny">
         Apple Music library sync is planned via MusicKit (needs an Apple Developer account). See README.
       </p>

@@ -113,7 +113,7 @@ export default function App() {
           />
         )}
         {tab === 'queue' && (
-          <QueueView lib={lib} leaving={leaving} onRate={startRate} onOpen={setOpenAlbum} onRemove={(id) => animateOut(id, () => update((l) => removeFromQueue(l, id)))} preview={preview} goSearch={goSearch} />
+          <QueueView lib={lib} leaving={leaving} onRate={startRate} onOpen={setOpenAlbum} onRemove={(id) => { if (confirm('Remove from your queue?')) animateOut(id, () => update((l) => removeFromQueue(l, id))); }} preview={preview} goSearch={goSearch} />
         )}
         {tab === 'data' && <DataView lib={lib} setLib={setLib} />}
         </div>

@@ -227,3 +227,45 @@ describe('dialog focus and Escape', () => {
     expect(document.activeElement).toBe(closeBtn);
   });
 });
+
+describe('queue remove confirm', () => {
+  beforeEach(() => {
+    stubAudio();
+    localStorage.clear();
+    provider.search.mockReset();
+    provider.getAlbumTracks.mockReset();
+    provider.getAlbumTracks.mockResolvedValue({ album, tracks: [airbag, karma] });
+    try { getAlbumPrefetcher().resetFailed(); } catch (_) {}
+  });
+  afterEach(() => {
+    cleanup();
+    vi.restoreAllMocks();
+  });
+
+  async function queueAirbag() {
+    render(<App />);
+    fireEvent.click(screen.getByRole('button', { name: 'Search' }));
+    provider.search.mockResolvedValue([airbag]);
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'Airbag' } });
+    fireEvent.click(await screen.findByRole('button', { name: '+ Queue' }, { timeout: 2000 }));
+    fireEvent.click(screen.getByRole('button', { name: /^Queue/ }));
+    await screen.findByRole('button', { name: 'Remove Airbag from queue' });
+  }
+
+  it('canceling the confirm leaves the song in the queue', async () => {
+    await queueAirbag();
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Airbag from queue' }));
+    expect(window.confirm).toHaveBeenCalledWith('Remove from your queue?');
+    expect(screen.getByText('Airbag')).toBeTruthy();
+    expect(screen.queryByText(/queue is empty/i)).toBeNull();
+  });
+
+  it('accepting the confirm removes the song from the queue', async () => {
+    await queueAirbag();
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Airbag from queue' }));
+    await waitFor(() => expect(screen.getByText(/queue is empty/i)).toBeTruthy(), { timeout: 2000 });
+  });
+});
+

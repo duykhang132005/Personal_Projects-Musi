@@ -67,7 +67,7 @@ export default function RankedView({ lib, kind, kindDir = 'fwd', leaving = new S
                       {item.externalUrl && (
                         <a href={item.externalUrl} target="_blank" rel="noreferrer" onClick={close}>Open in Apple Music (opens in new tab)</a>
                       )}
-                      <button className="danger" onClick={() => { close(); onRemove(item.id); }}>Remove</button>
+                      <button className="danger" onClick={() => { close(); onRemove(item.id); }} aria-label={`Remove ${item.title}`}>Remove</button>
                     </>
                   )}
                 </Menu>
