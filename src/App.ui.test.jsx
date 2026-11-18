@@ -158,6 +158,20 @@ describe('App and RateFlow wiring', () => {
     await waitFor(() => expect(screen.getByText('OK Computer')).toBeTruthy());
     await waitFor(() => expect(screen.getByText('1/2')).toBeTruthy());
   });
+
+  it('library remove confirm names the song and cancel keeps it ranked', async () => {
+    render(<App />);
+    await rateFromSearch(airbag);
+    fireEvent.click(screen.getByRole('button', { name: 'I liked it' }));
+    await waitFor(() => expect(screen.getByText('10.0')).toBeTruthy());
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+    fireEvent.click(screen.getByRole('button', { name: 'More for Airbag' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Remove Airbag' }));
+    expect(window.confirm).toHaveBeenCalledWith('Remove Airbag from your library?');
+    expect(screen.getByText('Airbag')).toBeTruthy();
+    expect(screen.getByText('10.0')).toBeTruthy();
+    window.confirm.mockRestore();
+  });
 });
 
 describe('dialog focus and Escape', () => {
@@ -194,6 +208,7 @@ describe('dialog focus and Escape', () => {
     await waitFor(() => expect(screen.getByText('OK Computer')).toBeTruthy());
     fireEvent.click(screen.getByRole('button', { name: 'Open album OK Computer' }));
     await screen.findByRole('dialog', { name: 'OK Computer' });
+    expect(screen.getByRole('button', { name: 'Close OK Computer' })).toBeTruthy();
     await screen.findByRole('button', { name: 'Rate' }, { timeout: 2000 });
     fireEvent.click(screen.getByRole('button', { name: 'Rate' }));
     await screen.findByRole('heading', { name: 'How was it?' });
@@ -213,7 +228,7 @@ describe('dialog focus and Escape', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Rate' }));
     const dialog = await screen.findByRole('dialog');
     await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
-    const closeBtn = within(dialog).getByRole('button', { name: 'Close' });
+    const closeBtn = within(dialog).getByRole('button', { name: 'Close rating' });
     const cancelBtn = within(dialog).getByRole('button', { name: 'Cancel' });
 
     // Container is focused on open; Tab should move to the first focusable control.
@@ -256,7 +271,7 @@ describe('queue remove confirm', () => {
     await queueAirbag();
     vi.spyOn(window, 'confirm').mockReturnValue(false);
     fireEvent.click(screen.getByRole('button', { name: 'Remove Airbag from queue' }));
-    expect(window.confirm).toHaveBeenCalledWith('Remove from your queue?');
+    expect(window.confirm).toHaveBeenCalledWith('Remove Airbag from your queue?');
     expect(screen.getByText('Airbag')).toBeTruthy();
     expect(screen.queryByText(/queue is empty/i)).toBeNull();
   });

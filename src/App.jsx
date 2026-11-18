@@ -83,8 +83,12 @@ export default function App() {
       changeTab('ranked');
     }
   };
+  const itemTitle = (id) => {
+    const t = lib.items[id]?.title;
+    return typeof t === 'string' && t.trim() ? t.trim() : 'this item';
+  };
   const remove = (id) => {
-    if (confirm('Remove from your library?')) animateOut(id, () => update((l) => removeItem(l, id)));
+    if (confirm(`Remove ${itemTitle(id)} from your library?`)) animateOut(id, () => update((l) => removeItem(l, id)));
   };
 
   const goSearch = () => changeTab('search');
@@ -113,7 +117,7 @@ export default function App() {
           />
         )}
         {tab === 'queue' && (
-          <QueueView lib={lib} leaving={leaving} onRate={startRate} onOpen={setOpenAlbum} onRemove={(id) => { if (confirm('Remove from your queue?')) animateOut(id, () => update((l) => removeFromQueue(l, id))); }} preview={preview} goSearch={goSearch} />
+          <QueueView lib={lib} leaving={leaving} onRate={startRate} onOpen={setOpenAlbum} onRemove={(id) => { if (confirm(`Remove ${itemTitle(id)} from your queue?`)) animateOut(id, () => update((l) => removeFromQueue(l, id))); }} preview={preview} goSearch={goSearch} />
         )}
         {tab === 'data' && <DataView lib={lib} setLib={setLib} />}
         </div>

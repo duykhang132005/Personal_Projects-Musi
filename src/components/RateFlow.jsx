@@ -32,7 +32,7 @@ export default function RateFlow({ item, lib, onDone, onCancel, preview }) {
   return (
     <div className="modal" role="dialog" aria-modal="true" aria-labelledby="rateflow-title" onClick={(e) => e.target === e.currentTarget && onCancel()}>
       <div className="sheet" ref={sheetRef} tabIndex={-1}>
-        <button className="sheet__close" onClick={onCancel} aria-label="Close">×</button>
+        <button className="sheet__close" onClick={onCancel} aria-label="Close rating">×</button>
         {!state && (
           <div key="bucket" className="step-in">
             <h2 id="rateflow-title">How was it?</h2>

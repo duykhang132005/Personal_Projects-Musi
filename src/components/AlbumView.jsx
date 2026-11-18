@@ -41,7 +41,7 @@ export default function AlbumView({ album, lib, onClose, onRate, onTracks, previ
   return (
     <div className="modal" role="dialog" aria-modal="true" aria-label={a.title} onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="sheet sheet--album step-in" ref={sheetRef} tabIndex={-1}>
-        <button className="sheet__close" onClick={onClose} aria-label="Close">×</button>
+        <button className="sheet__close" onClick={onClose} aria-label={`Close ${a.title || 'album'}`}>×</button>
         <header className="album__head">
           <div className="album__art">{a.artworkUrl ? <img src={a.artworkUrl} alt="" /> : null}</div>
           <div className="album__meta">

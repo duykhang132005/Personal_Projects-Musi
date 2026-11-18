@@ -75,6 +75,7 @@ src/
   styles.css                  mobile-first dark theme
   components/
     SearchView, RankedView, QueueView, DataView   the four tabs
+    DataView.ui.test.jsx      UI tests: status live region and import errors
     RateFlow                  bucket pick + comparison dialog
     AlbumView                 album detail dialog: tracklist, per-song scores, album average
     ItemCard                  song/album row (artwork, preview button, titles)
