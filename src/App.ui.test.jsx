@@ -137,7 +137,7 @@ describe('App and RateFlow wiring', () => {
     await rateFromSearch(karma);
     fireEvent.click(screen.getByRole('button', { name: 'I liked it' }));
     expect(screen.getByRole('heading', { name: 'Which is better?' })).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel rating' }));
     await waitFor(() => expect(screen.queryByRole('heading', { name: 'Which is better?' })).not.toBeTruthy());
 
     fireEvent.click(screen.getByRole('button', { name: 'Ranked' }));
@@ -172,6 +172,22 @@ describe('App and RateFlow wiring', () => {
     expect(screen.getByText('10.0')).toBeTruthy();
     window.confirm.mockRestore();
   });
+
+  it('shows album track load errors in a polite status region', async () => {
+    provider.getAlbumTracks.mockRejectedValue(new Error('offline'));
+    render(<App />);
+    await rateFromSearch(airbag);
+    fireEvent.click(screen.getByRole('button', { name: 'I liked it' }));
+    await waitFor(() => expect(screen.getByText('10.0')).toBeTruthy());
+    fireEvent.click(screen.getByRole('tab', { name: 'Albums' }));
+    await waitFor(() => expect(screen.getByText('OK Computer')).toBeTruthy());
+    fireEvent.click(screen.getByRole('button', { name: 'Open album OK Computer' }));
+    const dialog = await screen.findByRole('dialog', { name: 'OK Computer' });
+    const status = within(dialog).getByRole('status');
+    expect(status.getAttribute('aria-live')).toBe('polite');
+    await waitFor(() => expect(status.textContent).toMatch(/Could not load tracks: offline/));
+    expect(status.className).toBe('error');
+  });
 });
 
 describe('dialog focus and Escape', () => {
@@ -193,7 +209,7 @@ describe('dialog focus and Escape', () => {
     fireEvent.click(rateBtn);
     const dialog = await screen.findByRole('dialog');
     await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel rating' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeTruthy());
     expect(document.activeElement).toBe(rateBtn);
   });
@@ -229,7 +245,7 @@ describe('dialog focus and Escape', () => {
     const dialog = await screen.findByRole('dialog');
     await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
     const closeBtn = within(dialog).getByRole('button', { name: 'Close rating' });
-    const cancelBtn = within(dialog).getByRole('button', { name: 'Cancel' });
+    const cancelBtn = within(dialog).getByRole('button', { name: 'Cancel rating' });
 
     // Container is focused on open; Tab should move to the first focusable control.
     fireEvent.keyDown(document.activeElement, { key: 'Tab' });

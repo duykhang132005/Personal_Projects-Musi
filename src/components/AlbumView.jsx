@@ -62,8 +62,10 @@ export default function AlbumView({ album, lib, onClose, onRate, onTracks, previ
             <div className="progress__bar"><span style={{ transform: `scaleX(${rated.length / total})` }} /></div>
           </div>
         )}
-        {data.status === 'loading' && <p className="muted center">Loading tracks...</p>}
-        {data.status === 'error' && <p className="error">Could not load tracks: {data.error}</p>}
+        <p role="status" aria-live="polite" className={data.status === 'error' ? 'error' : 'muted center'}>
+          {data.status === 'loading' && 'Loading tracks...'}
+          {data.status === 'error' && `Could not load tracks: ${data.error}`}
+        </p>
         {data.status === 'done' && total === 0 && <p className="muted">No tracks found for this album.</p>}
 
         <ol className="tracks">

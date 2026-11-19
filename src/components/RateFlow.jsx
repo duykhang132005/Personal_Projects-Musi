@@ -45,7 +45,7 @@ export default function RateFlow({ item, lib, onDone, onCancel, preview }) {
                 </button>
               ))}
             </div>
-            <button className="btn btn--ghost sheet__cancel" onClick={onCancel}>Cancel</button>
+            <button className="btn btn--ghost sheet__cancel" onClick={onCancel} aria-label="Cancel rating">Cancel</button>
           </div>
         )}
         {state && opponent && (
@@ -65,7 +65,7 @@ export default function RateFlow({ item, lib, onDone, onCancel, preview }) {
             </div>
             <div className="sheet__foot">
               <button className="btn" onClick={() => choose('tie')}>Too close to call</button>
-              <button className="btn btn--ghost" onClick={onCancel}>Cancel</button>
+              <button className="btn btn--ghost" onClick={onCancel} aria-label="Cancel rating">Cancel</button>
             </div>
           </div>
         )}
