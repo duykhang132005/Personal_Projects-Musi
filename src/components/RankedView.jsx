@@ -60,14 +60,14 @@ export default function RankedView({ lib, kind, kindDir = 'fwd', leaving = new S
                   {(close) => (
                     <>
                       {kind === 'album' ? (
-                        <button onClick={() => { close(); onOpen(item); }}>Open album</button>
+                        <button role="menuitem" onClick={() => { close(); onOpen(item); }}>Open album</button>
                       ) : (
-                        <button onClick={() => { close(); onRerank(item); }}>Re-rank</button>
+                        <button role="menuitem" onClick={() => { close(); onRerank(item); }}>Re-rank</button>
                       )}
                       {item.externalUrl && (
-                        <a href={item.externalUrl} target="_blank" rel="noreferrer" onClick={close}>Open in Apple Music (opens in new tab)</a>
+                        <a role="menuitem" href={item.externalUrl} target="_blank" rel="noreferrer" onClick={close}>Open in Apple Music (opens in new tab)</a>
                       )}
-                      <button className="danger" onClick={() => { close(); onRemove(item.id); }} aria-label={`Remove ${item.title}`}>Remove</button>
+                      <button role="menuitem" className="danger" onClick={() => { close(); onRemove(item.id); }} aria-label={`Remove ${item.title}`}>Remove</button>
                     </>
                   )}
                 </Menu>

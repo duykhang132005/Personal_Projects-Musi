@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Children, Fragment, cloneElement, isValidElement, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useEscape } from '../lib/escapeStack.js';
 
@@ -52,21 +52,36 @@ export default function Menu({ children, label = 'More' }) {
     setPos({ top, left, up });
   };
 
+  // Latest callbacks for effects that must not re-subscribe on every parent render.
+  const closeRef = useRef(close);
+  const placeRef = useRef(place);
+  closeRef.current = close;
+  placeRef.current = place;
+
   useLayoutEffect(() => {
-    if (phase === 'open' && !pos) place();
-  });
+    if (phase !== 'open') return;
+    if (!pos) {
+      placeRef.current();
+      return;
+    }
+    const pop = popRef.current;
+    if (!pop || pop.contains(document.activeElement)) return;
+    // Land on the first action once the popover is positioned and visible.
+    const item = pop.querySelector('[role="menuitem"]');
+    (item || pop).focus({ preventScroll: true });
+  }, [phase, pos]);
 
   useEffect(() => {
-    if (phase !== 'open') return;
+    if (phase !== 'open') return undefined;
     const onDoc = (e) => {
       if (btnRef.current?.contains(e.target) || popRef.current?.contains(e.target)) return;
-      close();
+      closeRef.current();
     };
     const onScroll = (e) => {
       if (popRef.current?.contains(e.target)) return;
-      close();
+      closeRef.current();
     };
-    const onResize = () => place();
+    const onResize = () => placeRef.current();
     document.addEventListener('pointerdown', onDoc);
     window.addEventListener('scroll', onScroll, true);
     window.addEventListener('resize', onResize);
@@ -75,7 +90,7 @@ export default function Menu({ children, label = 'More' }) {
       window.removeEventListener('scroll', onScroll, true);
       window.removeEventListener('resize', onResize);
     };
-  });
+  }, [phase]);
   // Escape goes through the shared stack so it closes only the topmost layer.
   useEscape(() => {
     close();
@@ -93,13 +108,25 @@ export default function Menu({ children, label = 'More' }) {
           <div
             ref={popRef}
             role="menu"
+            tabIndex={-1}
             className={`menu__pop ${pos?.up ? 'menu__pop--up' : ''} ${phase === 'closing' ? 'is-closing' : ''}`}
             style={pos ? { top: pos.top, left: pos.left } : { top: 0, left: 0, visibility: 'hidden' }}
           >
-            {children(close)}
+            {markMenuItems(children(close))}
           </div>,
           document.body
         )}
     </div>
   );
+}
+
+function markMenuItems(nodes) {
+  return Children.map(nodes, (node) => {
+    if (!isValidElement(node)) return node;
+    // Children.map does not walk into fragments, and menu actions are usually wrapped in one.
+    if (node.type === Fragment) return markMenuItems(node.props.children);
+    if (node.type !== 'button' && node.type !== 'a') return node;
+    if (node.props.role === 'menuitem') return node;
+    return cloneElement(node, { role: 'menuitem' });
+  });
 }

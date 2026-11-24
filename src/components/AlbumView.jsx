@@ -88,7 +88,12 @@ export default function AlbumView({ album, lib, onClose, onRate, onTracks, previ
                 </div>
                 <div className="item__actions">
                   {typeof score === 'number' ? (
-                    <button className={`score score--${bucketForScore(score)} score--btn`} title="Re-rank" onClick={() => onRate(t, a, trackIds)}>
+                    <button
+                      className={`score score--${bucketForScore(score)} score--btn`}
+                      title="Re-rank"
+                      aria-label={`Re-rank ${t.title}, currently ${score.toFixed(1)}`}
+                      onClick={() => onRate(t, a, trackIds)}
+                    >
                       {score.toFixed(1)}
                     </button>
                   ) : (

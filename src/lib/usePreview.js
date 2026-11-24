@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 export function usePreview() {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState('');
+  // Bumps on every play, pause, or stop so a stale play() cannot overwrite a newer one.
+  const requestRef = useRef(0);
 
   useEffect(() => {
     const a = new Audio();
@@ -16,15 +18,25 @@ export function usePreview() {
     const a = audioRef.current;
     if (!a || !url) return;
     if (playing === url) {
+      requestRef.current += 1;
       a.pause();
       setPlaying('');
       return;
     }
+    const request = ++requestRef.current;
     a.src = url;
-    a.play().then(() => setPlaying(url)).catch(() => setPlaying(''));
+    a.play().then(() => {
+      if (requestRef.current !== request) return;
+      setPlaying(url);
+    }).catch(() => {
+      // An aborted play() of track A rejects after track B has started. Ignore it.
+      if (requestRef.current !== request) return;
+      setPlaying('');
+    });
   }, [playing]);
 
   const stop = useCallback(() => {
+    requestRef.current += 1;
     audioRef.current?.pause();
     setPlaying('');
   }, []);

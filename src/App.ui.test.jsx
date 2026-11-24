@@ -166,7 +166,7 @@ describe('App and RateFlow wiring', () => {
     await waitFor(() => expect(screen.getByText('10.0')).toBeTruthy());
     vi.spyOn(window, 'confirm').mockReturnValue(false);
     fireEvent.click(screen.getByRole('button', { name: 'More for Airbag' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Remove Airbag' }));
+    fireEvent.click(screen.getByRole('menuitem', { name: 'Remove Airbag' }));
     expect(window.confirm).toHaveBeenCalledWith('Remove Airbag from your library?');
     expect(screen.getByText('Airbag')).toBeTruthy();
     expect(screen.getByText('10.0')).toBeTruthy();
