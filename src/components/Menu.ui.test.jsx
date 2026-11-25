@@ -61,6 +61,40 @@ describe('Menu focus, roles, and listeners', () => {
     expect(document.activeElement).toBe(items[0]);
   });
 
+  it('moves focus between menuitems with ArrowUp, ArrowDown, Home, and End', async () => {
+    render(
+      <Menu label="More for Airbag">
+        {(close) => (
+          <>
+            <button onClick={close}>Re-rank</button>
+            <button onClick={close}>Open album</button>
+            <button onClick={close}>Remove</button>
+          </>
+        )}
+      </Menu>
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'More for Airbag' }));
+    const items = screen.getAllByRole('menuitem');
+    await waitFor(() => expect(document.activeElement).toBe(items[0]));
+
+    fireEvent.keyDown(document.activeElement, { key: 'ArrowLeft' });
+    expect(document.activeElement).toBe(items[0]);
+
+    fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(items[1]);
+    fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(items[2]);
+    fireEvent.keyDown(document.activeElement, { key: 'ArrowDown' });
+    expect(document.activeElement).toBe(items[0]);
+
+    fireEvent.keyDown(document.activeElement, { key: 'ArrowUp' });
+    expect(document.activeElement).toBe(items[2]);
+    fireEvent.keyDown(document.activeElement, { key: 'Home' });
+    expect(document.activeElement).toBe(items[0]);
+    fireEvent.keyDown(document.activeElement, { key: 'End' });
+    expect(document.activeElement).toBe(items[2]);
+  });
+
   it('restores focus to the trigger when Escape closes the menu', async () => {
     render(
       <Menu label="More for Airbag">

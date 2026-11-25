@@ -10,6 +10,11 @@ export function usePreview() {
   useEffect(() => {
     const a = new Audio();
     a.addEventListener('ended', () => setPlaying(''));
+    // A stream error does not reject play(). Clear the button and ignore that request.
+    a.addEventListener('error', () => {
+      requestRef.current += 1;
+      setPlaying('');
+    });
     audioRef.current = a;
     return () => a.pause();
   }, []);

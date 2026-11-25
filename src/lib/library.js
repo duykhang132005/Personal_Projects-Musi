@@ -36,13 +36,15 @@ function withoutInBuckets(lib, kind, id) {
 
 /** Replace a bucket's ordered list (result of a finished comparison). */
 export function setBucketOrder(lib, kind, bucket, orderedIds) {
-  let lists = lib.lists;
-  for (const id of orderedIds) {
-    // make sure an id only lives in one bucket
-    lists = withoutInBuckets({ ...lib, lists }, kind, id);
+  // Diff once so each placed id is removed from the other buckets in a single pass.
+  const placed = new Set(orderedIds);
+  const cur = lib.lists[kind];
+  const nextKind = {};
+  for (const b of BUCKETS) {
+    nextKind[b] = b === bucket ? orderedIds.slice() : cur[b].filter((id) => !placed.has(id));
   }
-  lists = { ...lists, [kind]: { ...lists[kind], [bucket]: orderedIds.slice() } };
-  const queue = lib.queue.filter((id) => !orderedIds.includes(id));
+  const lists = { ...lib.lists, [kind]: nextKind };
+  const queue = lib.queue.filter((id) => !placed.has(id));
   return { ...lib, lists, queue };
 }
 

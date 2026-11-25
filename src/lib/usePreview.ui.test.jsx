@@ -21,12 +21,18 @@ describe('usePreview request token', () => {
     globalThis.Audio = class {
       constructor() {
         this.src = '';
+        this.listeners = {};
       }
-      addEventListener() {}
+      addEventListener(type, fn) {
+        (this.listeners[type] ||= []).push(fn);
+      }
+      emit(type) {
+        for (const fn of this.listeners[type] || []) fn(new Event(type));
+      }
       pause() {}
       play() {
         const pending = deferred();
-        plays.push({ src: this.src, ...pending });
+        plays.push({ src: this.src, audio: this, ...pending });
         return pending.promise;
       }
     };
@@ -69,6 +75,41 @@ describe('usePreview request token', () => {
     await act(async () => {
       plays[0].reject(new Error('NotAllowedError'));
       await plays[0].promise.catch(() => {});
+    });
+    expect(result.current.playing).toBe('');
+  });
+
+  it('clears playing when the stream errors and ignores that play() resolving later', async () => {
+    const { result } = renderHook(() => usePreview());
+    const url = 'https://audio.example/a.m4a';
+    act(() => {
+      result.current.toggle(url);
+    });
+    act(() => {
+      plays[0].audio.emit('error');
+    });
+    expect(result.current.playing).toBe('');
+
+    await act(async () => {
+      plays[0].resolve();
+      await plays[0].promise;
+    });
+    expect(result.current.playing).toBe('');
+  });
+
+  it('clears a preview that is already playing when the audio errors', async () => {
+    const { result } = renderHook(() => usePreview());
+    const url = 'https://audio.example/a.m4a';
+    act(() => {
+      result.current.toggle(url);
+    });
+    await act(async () => {
+      plays[0].resolve();
+      await plays[0].promise;
+    });
+    expect(result.current.playing).toBe(url);
+    act(() => {
+      plays[0].audio.emit('error');
     });
     expect(result.current.playing).toBe('');
   });

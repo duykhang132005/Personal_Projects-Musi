@@ -154,7 +154,7 @@ describe('App and RateFlow wiring', () => {
     await rateFromSearch(airbag);
     fireEvent.click(screen.getByRole('button', { name: 'I liked it' }));
     await waitFor(() => expect(screen.getByText('10.0')).toBeTruthy());
-    fireEvent.click(screen.getByRole('tab', { name: 'Albums' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Albums' }));
     await waitFor(() => expect(screen.getByText('OK Computer')).toBeTruthy());
     await waitFor(() => expect(screen.getByText('1/2')).toBeTruthy());
   });
@@ -179,7 +179,7 @@ describe('App and RateFlow wiring', () => {
     await rateFromSearch(airbag);
     fireEvent.click(screen.getByRole('button', { name: 'I liked it' }));
     await waitFor(() => expect(screen.getByText('10.0')).toBeTruthy());
-    fireEvent.click(screen.getByRole('tab', { name: 'Albums' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Albums' }));
     await waitFor(() => expect(screen.getByText('OK Computer')).toBeTruthy());
     fireEvent.click(screen.getByRole('button', { name: 'Open album OK Computer' }));
     const dialog = await screen.findByRole('dialog', { name: 'OK Computer' });
@@ -220,7 +220,7 @@ describe('dialog focus and Escape', () => {
     fireEvent.click(screen.getByRole('button', { name: 'I liked it' }));
     await waitFor(() => expect(screen.getByText('10.0')).toBeTruthy());
 
-    fireEvent.click(screen.getByRole('tab', { name: 'Albums' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Albums' }));
     await waitFor(() => expect(screen.getByText('OK Computer')).toBeTruthy());
     fireEvent.click(screen.getByRole('button', { name: 'Open album OK Computer' }));
     await screen.findByRole('dialog', { name: 'OK Computer' });
