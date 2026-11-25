@@ -19,11 +19,13 @@ export default function DataView({ lib, setLib }) {
 
   function doExport() {
     const blob = new Blob([exportLibrary(lib)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
+    a.href = url;
     a.download = `musi-library-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
-    URL.revokeObjectURL(a.href);
+    // Revoke on a later turn so Firefox and Safari can start the download.
+    setTimeout(() => URL.revokeObjectURL(url), 0);
     notice('Exported.');
   }
 

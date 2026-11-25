@@ -5,6 +5,21 @@ import { useEscape } from '../lib/escapeStack.js';
 const GAP = 4;
 const MARGIN = 8;
 
+function onMenuKeyDown(e) {
+  const key = e.key;
+  if (key !== 'ArrowDown' && key !== 'ArrowUp' && key !== 'Home' && key !== 'End') return;
+  const items = [...e.currentTarget.querySelectorAll('[role="menuitem"]')];
+  if (items.length === 0) return;
+  e.preventDefault();
+  const i = items.indexOf(document.activeElement);
+  let next = 0;
+  if (key === 'Home') next = 0;
+  else if (key === 'End') next = items.length - 1;
+  else if (key === 'ArrowDown') next = i < 0 ? 0 : (i + 1) % items.length;
+  else next = i < 0 ? items.length - 1 : (i - 1 + items.length) % items.length;
+  items[next].focus({ preventScroll: true });
+}
+
 /**
  * Popover menu rendered in a portal on document.body with fixed positioning, so row
  * transforms, animations, and overflow never clip it or stack it behind later rows.
@@ -111,6 +126,7 @@ export default function Menu({ children, label = 'More' }) {
             tabIndex={-1}
             className={`menu__pop ${pos?.up ? 'menu__pop--up' : ''} ${phase === 'closing' ? 'is-closing' : ''}`}
             style={pos ? { top: pos.top, left: pos.left } : { top: 0, left: 0, visibility: 'hidden' }}
+            onKeyDown={onMenuKeyDown}
           >
             {markMenuItems(children(close))}
           </div>,

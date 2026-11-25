@@ -17,7 +17,7 @@ Requires Node 20.19 or newer (or 22.12+), as needed by Vite 8.
 cd Personal_Projects\musi
 npm install
 npm run dev        # open the printed URL (http://localhost:5173)
-npm test           # unit and UI tests (Vitest; jsdom for *.test.jsx)
+npm test           # unit and UI tests (Vitest; jsdom is opt-in per file via // @vitest-environment jsdom on *.ui.test.jsx)
 npm run build      # production build into dist\
 npm run preview    # serve the built dist\ locally
 ```
@@ -51,6 +51,8 @@ Re-rank an item from its menu in the ranked list; canceling keeps its old spot.
 - Album titles act as buttons: focus one with Tab and press Enter or Space to open the album.
 - Escape closes only the topmost layer: an open menu first, then the rating window, then the
   album page (src/lib/escapeStack.js).
+- In an open row menu, ArrowUp and ArrowDown move between the actions and wrap around.
+  Home and End jump to the first and last action.
 - Opening the rating window or album page moves focus into it; closing it returns focus to
   where you were. While it is open, Tab cycles through the focusable controls inside it and
   wraps from the last back to the first (Shift+Tab wraps the other way). Disabled and hidden

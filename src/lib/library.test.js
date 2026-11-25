@@ -33,6 +33,24 @@ describe('library model', () => {
     expect(lib.lists.song.fine).toEqual(['itunes:song:1']);
   });
 
+  it('removes only the newly placed ids from other buckets and the queue', () => {
+    let lib = emptyLibrary();
+    for (const n of [1, 2, 3, 4, 5]) lib = addItem(lib, song(n));
+    lib = addToQueue(lib, song(4));
+    lib = setBucketOrder(lib, 'song', 'liked', ['itunes:song:1', 'itunes:song:2', 'itunes:song:5']);
+    lib = setBucketOrder(lib, 'song', 'disliked', ['itunes:song:3']);
+    const order = ['itunes:song:3', 'itunes:song:4'];
+    lib = setBucketOrder(lib, 'song', 'fine', order);
+    order.push('itunes:song:1');
+    expect(lib.lists.song).toEqual({
+      liked: ['itunes:song:1', 'itunes:song:2', 'itunes:song:5'],
+      fine: ['itunes:song:3', 'itunes:song:4'],
+      disliked: [],
+    });
+    expect(lib.queue).toEqual([]);
+    expect(lib.lists.album).toEqual(emptyLibrary().lists.album);
+  });
+
   it('removes an item from buckets and the library', () => {
     let lib = addItem(emptyLibrary(), song(1));
     lib = setBucketOrder(lib, 'song', 'liked', ['itunes:song:1']);
