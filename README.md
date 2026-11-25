@@ -26,8 +26,14 @@ To test on your phone on the same Wi-Fi: `npm run dev -- --host` and open the Ne
 
 ## Deploy
 
+Each push to `main` deploys the site to https://duykhang132005.github.io/Personal_Projects-Musi/
+once Settings > Pages > Source is set to GitHub Actions.
+
 `npm run build` produces a fully static `dist\` folder. `base: './'` in `vite.config.js`
-makes it work from any subfolder, so just upload the contents of `dist\`.
+makes it work from any subfolder, so just upload the contents of `dist\` to host it elsewhere.
+
+Library data is stored per browser in localStorage. Use export/import to move a library
+to another browser or device.
 
 ## How rating works
 
